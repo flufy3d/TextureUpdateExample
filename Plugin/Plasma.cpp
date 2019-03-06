@@ -63,4 +63,6 @@ extern "C" void UNITY_INTERFACE_EXPORT DestroyPlasma()
 {
 	if (g_img != NULL)
 		delete[] g_img;
+
+	g_img = NULL;
 }
