@@ -13,11 +13,29 @@ public class Test : MonoBehaviour
 #endif
     static extern System.IntPtr GetTextureUpdateCallback();
 
+#if PLATFORM_IOS
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+#else
+    [System.Runtime.InteropServices.DllImport("Plasma")]
+#endif
+    static extern void CreatePlasma(int width,int height);
+
+
+#if PLATFORM_IOS
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+#else
+    [System.Runtime.InteropServices.DllImport("Plasma")]
+#endif
+    static extern void DestroyPlasma();
+
+
+
     void Start()
     {
         _command = new CommandBuffer();
         _texture = new Texture2D(64, 64, TextureFormat.RGBA32, false);
         _texture.wrapMode = TextureWrapMode.Clamp;
+        CreatePlasma(64,64);
 
         // Set the texture to the renderer with using a property block.
         var prop = new MaterialPropertyBlock();
@@ -27,6 +45,7 @@ public class Test : MonoBehaviour
 
     void OnDestroy()
     {
+        DestroyPlasma();
         _command.Dispose();
         Destroy(_texture);
     }

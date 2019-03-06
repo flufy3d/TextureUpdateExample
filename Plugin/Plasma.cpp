@@ -20,6 +20,7 @@ namespace
         return r + (g << 8) + (b << 16) + 0xff000000;
     }
 
+	uint32_t* g_img = NULL;
     // Callback for texture update events
     void TextureUpdateCallback(int eventID, void* data)
     {
@@ -31,18 +32,17 @@ namespace
             auto params = reinterpret_cast<UnityRenderingExtTextureUpdateParamsV2*>(data);
             auto frame = params->userData;
 
-            uint32_t* img = new uint32_t[params->width * params->height];
             for (auto y = 0u; y < params->height; y++)
                 for (auto x = 0u; x < params->width; x++)
-                    img[y * params->width + x] = Plasma(x, y, params->width, params->height, frame);
+					g_img[y * params->width + x] = Plasma(x, y, params->width, params->height, frame);
 
-            params->texData = img;
+            params->texData = g_img;
         }
         else if (event == kUnityRenderingExtEventUpdateTextureEndV2)
         {
             // UpdateTextureEnd: Free up the temporary memory.
-            auto params = reinterpret_cast<UnityRenderingExtTextureUpdateParamsV2*>(data);
-            delete[] reinterpret_cast<uint32_t*>(params->texData);
+            //auto params = reinterpret_cast<UnityRenderingExtTextureUpdateParamsV2*>(data);
+            //delete[] reinterpret_cast<uint32_t*>(params->texData);
         }
     }
 }
@@ -50,4 +50,17 @@ namespace
 extern "C" UnityRenderingEventAndData UNITY_INTERFACE_EXPORT GetTextureUpdateCallback()
 {
     return TextureUpdateCallback;
+}
+
+
+extern "C" void UNITY_INTERFACE_EXPORT CreatePlasma(int width,int height)
+{
+	if (g_img == NULL)
+		g_img = new uint32_t[width * height];
+}
+
+extern "C" void UNITY_INTERFACE_EXPORT DestroyPlasma()
+{
+	if (g_img != NULL)
+		delete[] g_img;
 }
