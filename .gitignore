@@ -24,3 +24,5 @@ Desktop.ini
 # Xcode
 xcuserdata
 xcshareddata
+obj
+.vs
